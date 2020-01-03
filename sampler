@@ -1,0 +1,73 @@
+#!/usr/bin/env python
+"""Performs `citrine_challenge.AdaptiveSampler` sampling"""
+
+
+# here we import the sampler
+from citrine_challenge import AdaptiveSampler as Sampler
+
+
+if __name__ == '__main__':
+	# We use argparse to configure the communication from the command line
+	# (Note: I usually prevered argh, but basically argparse does the job,
+	# this way nothing needs to be installed)
+	import argparse
+
+	parser = argparse.ArgumentParser()
+
+	# positional arguments
+	parser.add_argument("input_file", type=str, help="input file")
+	parser.add_argument("output_file", type=str, help="output file")
+	parser.add_argument("n_results", type=int, help="number of results")
+
+	# optional kwargs
+	parser.add_argument(
+		'-a', '--atol',
+		help="Controls the minimum Eucledian distance (in normalized space) which all sample vectors "
+		     "must exhibit before being added to the samples list (positive float, defaults to 1e-4)",
+		type=float,
+		default=1e-4
+	)
+
+	parser.add_argument(
+		'-n', '--n-correlated-samples',
+		help="Number of samples considered in minimizing correlations (positive int, defaults to 100)",
+		type=int,
+		default=100
+	)
+
+	parser.add_argument(
+		'-t', '--normalize-pca-threshold',
+		help="Threshold of `PCA` variance which are considered as important in order "
+		     "to reduce the dimensionality of the constraint problem (semi positive float, defaults to 0.1)",
+		type=float,
+		default=0.1
+	)
+
+	parser.add_argument(
+		'-l', '--log-interval',
+		help="Interval at which sample status messages are logged on the screen (positive int, defaults to 10)",
+		type=int,
+		default=10
+	)
+
+	# optional flags
+	parser.add_argument(
+		'-q', '--quiet',
+		action='store_true',
+		help="Set to quiet mode"
+	)
+
+	parser.add_argument(
+		'-u', '--use-example',
+		help="Use the example given by the <input_file> during sampling",
+		action='store_true',
+	)
+
+	arguments = parser.parse_args()
+
+	# transform quiet flag to verbose keyword
+	kwargs = dict(**vars(arguments))
+	kwargs['verbose'] = not kwargs.pop('quiet', False)
+
+	# pass kwargs to sampler
+	Sampler.main(**kwargs)
