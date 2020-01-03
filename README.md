@@ -48,7 +48,7 @@ the form `g(x) >= 0.0` .
 
 we can test the sampler on the [example](./test/files/example.txt) problem:
 ```shell script
-./sampler test/files/alloy.txt test/dat/sampler/example.txt 1000
+./sampler test/files/example.txt test/dat/sampler/example.txt 1000
 > sample 1000 configurations from input <test/files/example.txt>
 >        sample id  draw time [sec] total time [sec]           status
 >        1000/1000           0.0352          35.1512         finished
