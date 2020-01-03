@@ -84,7 +84,7 @@ The leading *PCA* threshold is controlled via the parameter`--normalize-pca-thre
 For the moment `R(N{Xi})` is drawn at random from `N({Xi})`, the length is controlled by the parameter `--n-correlated-samples` (int). 
 `AdaptiveSampler` uses an *initialization* phase in which `n_correlated_samples` are not optimized for correlation minimization (this is before normalization can effectively be  applied). These samples are subsequently overwritten in a *de-correlation* phase. After that newly drawn samples are merely *appended* until convergence is reached: until `n_results` samples have been identified (this could be done more sophisticated in the future).
 
-The sampler is python module-based, one can also use the `citrine_challenge` module in python scripts (if `citrine_challenge` is in the `PYTHONPATH` environment variable):
+The sampler is python module-based, one can also use the `citrine_challenge` module in python scripts:
 ```python
 from citrine_challenge import AdaptiveSampler as Sampler
 
@@ -92,6 +92,7 @@ sampler = Sampler(input_file="<input_file>", output_file="<output_file>", n_resu
 results = sampler.sample()
 sampler.dump_samples()
 ```
+(if one promts to the `citrine_challenge` root directory or adds it to the `PYTHONPATH` environment variable; or one chooses to install the sampler using `python setup.py install` in the projects main directory)
 
 ### Installation instructions
 The project is written in *Python 3* and was tested with *Python 3.8.0* under *Ubuntu 16.04* and *Ubuntu 18.04*.
