@@ -99,6 +99,12 @@ sampler.dump_samples()
 ### Installation instructions
 The project is written in *Python 3* and was tested with *Python 3.7* and *Python 3.8.0* under *Ubuntu 16.04* and *Ubuntu 18.04*.
 
+#### Get the project
+Download the *git-repository* or clone it using
+```shell script
+git clone https://github.com/bhartl/citrine_challenge.git
+```
+
 #### Install Python using `Anaconda`
 We recommend the use of *anaconda3*, which can be downloaded [here](https://www.anaconda.com/distribution/): download the *Python 3.7 version* of Anaconda and follow the install instructions.
 
