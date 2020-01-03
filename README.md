@@ -18,12 +18,12 @@ Installation instructions can be found [below](#installation-instructions).
 
 *Optional keyword arguments*:
 - `--atol <float>` controls the minimum Eucledian distance (in normalized space) which all sample vectors must exhibit before being added to the samples list (positive float, defaults to 1e-4)
-- `--n-correlated-samples <uint>`: number of samples considered in minimizing correlations (positive int, defaults to 42)
-- `--normalize-pca-threshold <float>`: threshold of *PCA* variance which are considered as important in order to reduce the dimensionality of the constraint problem (semi positive float, defaults to 0.1)
-- `--log-interval <int>` controls the interval how often the samling status is logged to the screen (note that this might slow down the process of sampling) (positive integer, defaults to 10).
+- `--n-correlated-samples <uint>`: number of samples considered in minimizing correlations (positive int, defaults to 100)
+- `--normalize-pca-threshold <float>`: threshold of *PCA* variances which are considered as important in order to reduce the dimensionality of the constraint problem (semi positive float, defaults to 0.1)
+- `--log-interval <int>` controls the interval how often the samling status is printed to the screen (positive integer, defaults to 10).
 
 *Optional flags*:
-- `-q` (quiet) controls the verbosity of `./sampler`. Use `-q` to perform the sampling without screen output.
+- `-q` controls the verbosity of `./sampler`. Use `-q` to perform the sampling without screen output.
 - `-u`: Use the example given by the `<input_file>` during sampling 
 
 You can also ask for help:
@@ -63,7 +63,7 @@ The project is based on the `citrine_challange` python module in the root direct
  
 The `Constraint` was provided by *Citrine* which handles the parsing of input files.
 
-The `SamplerConstraint` inherits the `Constraint` class and extends its functionality by giving access to the numerical values of constraint violations, `f(x) = -g(x) * h(-g(x))`, where `h(y)` is the Heaviside function satisfying `h(y) = 0` for `y<0` and `h(y) = 1` otherwise. I.e. `f(x) > 0` represents the violation of constraint `g(x)`, `f(x)=0` ensures that the constraint `g(x)>=0` is satisfied.
+The `SamplerConstraint` inherits the `Constraint` class and extends its functionality by giving access to the numerical values of constraints, `g(x)`, and its violations, `f(x) = -g(x) * h(-g(x))`, where `h(y)` is the Heaviside function satisfying `h(y) = 0` for `y<0` and `h(y) = 1` otherwise. I.e. `f(x) > 0` represents the violation of constraint `g(x)`, `f(x)=0` ensures that the constraint `g(x)>=0` is satisfied.
  
 The `BaseSampler` class handles input, output and general sampling tasks and containts also a rather straight-forward random sampling method (which may be applicable for low-dimensional problems): 
   Random samples on the unit hypercube are drawn and evaluated against the constraints `g(x)>=0`. If they satisfy the constraints they are stored in a list, `{Xi}`, until `n_results` configurations have been identified, which is the current (most simple) convergence criterion. Note that we only append results to the sample list if their Eucledian distance to all other samples in this list is above a certain threshold `min(|{Xi} - x|) >= atol` (which is an optional parameter of the sampler, see `./sampler -h`).
@@ -84,7 +84,7 @@ The leading *PCA* threshold is controlled via the parameter`--normalize-pca-thre
 For the moment `R(N{Xi})` is drawn at random from `N({Xi})`, the length is controlled by the parameter `--n-correlated-samples` (int). 
 `AdaptiveSampler` uses an *initialization* phase in which `n_correlated_samples` are not optimized for correlation minimization (this is before normalization can effectively be  applied). These samples are subsequently overwritten in a *de-correlation* phase. After that newly drawn samples are merely *appended* until convergence is reached: until `n_results` samples have been identified (this could be done more sophisticated in the future).
 
-The sampler is python module-based, one can also use the `citrine_challenge` module in python scripts:
+The sampler is python module based, one can also use the `citrine_challenge` module in python scripts:
 ```python
 from citrine_challenge import AdaptiveSampler as Sampler
 
@@ -92,10 +92,12 @@ sampler = Sampler(input_file="<input_file>", output_file="<output_file>", n_resu
 results = sampler.sample()
 sampler.dump_samples()
 ```
-(if one promts to the `citrine_challenge` root directory or adds it to the `PYTHONPATH` environment variable; or one chooses to install the sampler using `python setup.py install` in the projects main directory)
+- if one promts to the `citrine_challenge` root directory 
+- or adds it to the `PYTHONPATH` environment variable; 
+- or one chooses to install the sampler using `python setup.py install` in the projects main directory)
 
 ### Installation instructions
-The project is written in *Python 3* and was tested with *Python 3.8.0* under *Ubuntu 16.04* and *Ubuntu 18.04*.
+The project is written in *Python 3* and was tested with *Python 3.7* and *Python 3.8.0* under *Ubuntu 16.04* and *Ubuntu 18.04*.
 
 #### Install Python using `Anaconda`
 We recommend the use of *anaconda3*, which can be downloaded [here](https://www.anaconda.com/distribution/): download the *Python 3.7 version* of Anaconda and follow the install instructions.
@@ -117,8 +119,8 @@ you can go back to your orignal python environment.
 
 #### Python module dependencies
 The `citrine_challnge` implementation depends on the python modules `numpy`, `scipy`, `scikit-learn` (and optional `unittest2`) which can be installed using `conda`:
-```
-conda install -c anaconda numpy==1.16.1 scipy scikit-learn
+```shell script
+conda install -c anaconda numpy scipy scikit-learn
 ```
 and optional:
 ```shell script
@@ -127,6 +129,7 @@ conda install -c anaconda unittest2
 
 If the use of anaconda is not desired, installation may be performed using `pip`
 ```shell script
+python -m pip install --upgrade pip
 pip install numpy scipy scikit-learn
 ```
 (and possible dependecies thereof)
@@ -136,26 +139,26 @@ pip install unittest2
 ```
 
 #### Test installation
-Tests are located in the `test/citrine_challenge` subfolder and represent demonstrative tests for the `BaseSampler` functionalities and apply `BaseSamler` and `AdaptiveSampler` the `sample` and `dump_samples` routines to the four provided test cases: [mixture](./test/files/mixture.txt), [example](./test/files/example.txt), [formulation](./test/files/formulation.txt) and [alloy](./test/files/alloy.txt).
+Tests are located in the `test/citrine_challenge` subfolder and represent demonstrative tests for the `BaseSampler` functionalities and apply `sample` and `dump_samples` methods for `BaseSampler` and `AdaptiveSampler` to the four provided test cases: [mixture](./test/files/mixture.txt), [example](./test/files/example.txt), [formulation](./test/files/formulation.txt) and [alloy](./test/files/alloy.txt). (Note that `BaseSampler` is incapable of sampling the *alloy* problem in a reasonable time.)
 
-The installation may be tested using the `unittest2` package:
+The installation may be tested using the `unittest2` package by executing:
 ```shell script
-python -m unittest discover test/citrine_challenge
+./test/sampler
+```
+or directly
+```shell script
+unit2 discover test/citrine_challenge/
 ```
 
 *Remark*:
-If you encounter warnings like *'RuntimeWarning: numpy.ufunc size changed, may indicate binary incompatibility.'* you may update your numpy version to `1.16.1`, which, at the time of creation of this document, was not yet compatible with `python 3.8`:
-after creating a fresh virtual environment type
-```shell script
-conda install numpy==1.16.1 scipy scikit-learn unittest2
-```
-(this may take a while since *Python3.7* as do be downloaded).
-I have encountered this issue for a while and I don't now a good solution, *numpy*'s suggestion is to ignore the warning.
+If you encounter warnings like *'RuntimeWarning: numpy.ufunc size changed, may indicate binary incompatibility.'* you may update your `numpy == 1.16.1`, which, at the time of creation of this document, was not yet compatible with `python 3.8`.
+I have encountered this issue for a while and I don't now a good solution, *numpy*'s suggestion is to ignore the warning. 
 
 ## Remarks
 There might be a bias for certain problems with strongly attractive basins: Many solutions of the minimization step may end up in this region.
 
 The execution time for the `test/files/alloy.txt` task is mainly due to the dimensionality in the de-correlation step. Including too many samples and too many components of the PCA transformed samples in the correlation matrix will slow down the process drastically.
+This parameter is quite delicate.
 
 ## Licence
 The software can be distributed under MIT [LICENCE](./LICENCE).

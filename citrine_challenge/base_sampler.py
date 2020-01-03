@@ -192,7 +192,11 @@ class BaseSampler(object):
 		if self._log:
 			self.log('{:>16s} {:>16s} {:>16s} {:>16s}'.format('sample id', 'draw time [sec]', 'total time [sec]', 'status'))
 
-		self._samples = [i for i in initial_samples]  # initialize list of sample vectors
+		self._samples = []  # initialize list of sample vectors
+		for initial_sample in  initial_samples:
+			# make sure initial samples, if provided satisfy constraints
+			self.append_sample(initial_sample)
+
 		sample_steps = 0    # number of total sampling steps (until convergence_criteria are satisfied)
 		total_time = 0.     # total time of sampling (for logging)
 

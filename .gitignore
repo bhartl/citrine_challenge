@@ -4,3 +4,4 @@ test/dat/
 Citrine_Challenge.egg-info/
 dist/
 build/
+**/__pycache__/
