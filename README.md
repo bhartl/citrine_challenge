@@ -16,6 +16,10 @@ The “API” of the challenge is file based: the root directory of this project
 
 Installation instructions can be found [below](#installation-instructions).
 
+The sampler provides status messages about the sampling-state, i.e. 
+it displays the current `sample id` (the current numer of sampled vectors),
+  the `draw time [sec]` (the time it took to draw a single vector which satisfies the constraints), `total time [sec]` (the total sampling time) and a `status` message (*initialize*, *de-correlate*, *appending*, *finished* or a message with the reason of rejection: *atol* or *constraints*)
+
 *Optional keyword arguments*:
 - `--atol <float>` controls the minimum Eucledian distance (in normalized space) which all sample vectors must exhibit before being added to the samples list (positive float, defaults to 1e-4)
 - `--n-correlated-samples <uint>`: number of samples considered in minimizing correlations (positive int, defaults to 100)
@@ -42,16 +46,18 @@ the form `g(x) >= 0.0` .
 ./sampler <input_file> <output_file> <n_results>
 ```
 
-for example
+we can test the sampler on the [example](./test/files/example.txt) problem:
 ```shell script
-./sampler test/files/example.txt test/dat/sampler/example.txt 1000
+./sampler test/files/alloy.txt test/dat/sampler/example.txt 1000
+> sample 1000 configurations from input <test/files/example.txt>
+>        sample id  draw time [sec] total time [sec]           status
+>        1000/1000           0.0352          35.1512         finished
+> 
+> done with 1872 sampling steps after 35.15 seconds
+> writing results to output file <test/dat/sampler/example.txt>
 ```
 
-Other example files are listed here:
-- [mixture](./test/files/mixture.txt)
-- [example](./test/files/example.txt)
-- [formulation](./test/files/formulation.txt) and 
-- [alloy](./test/files/alloy.txt).
+Other example files are listed here: [mixture](./test/files/mixture.txt), [example](./test/files/example.txt), [formulation](./test/files/formulation.txt) and [alloy](./test/files/alloy.txt).
 
 ### Output file
 An output file is generated after the sampling finished. It contains a list of `<n_results>` vectors (space delimited within the vector; one vector per line). 
@@ -76,8 +82,7 @@ In order to explore broader regions of the configuration space a **second optimi
 Since the constraints of the problem may introduce a bias (offset and scales) of different components of the vectors in `{Xi}` the second minimization is evaluated in a **normalized space** of the sampled data `{Xi}`: 
 First we use *scikit-learn*'s *StandardScaler* to remove the mean of `R{Xi}` and scale to unit variance: `{Xi} -> S({Xi})` .
 On top of that we use Principal Component Analysis (*PCA*, again *scikit-learn*) for dimensional reduction by only considering the leading principal components of `S{Xi}` which's variances, `vi`, are larger than or equal to a specified threshold `vi >= normalize_pca_threshold`.
-With this we have defined the transformation `N(x) = PCA(S(x))` and we define the constraint functional to optimize (i.e. the Lagrangian): `L(c) = |corr(R(N({Xi}), N(c))| + sum_i(l_i * f_i(c))`, where the sum over lagrange multipliers `l_i` ensures that the constraints are satisfied `f_i(x)=0` 
-(we use *scipy*'s *SLSQP* implementation to minimize `L(c)`).
+With this we have defined the transformation `N(x) = PCA(S(x))` and we define the constraint functional to optimize (i.e. the Lagrangian): `L(c) = |corr(R(N({Xi}), N(c))| + sum_i(f_i(c)) + sum_i(l_i * f_i(c))`, where the first sum over all violations `f_i(x)` supports the minimizer to not leave feasible regions and the second sum over lagrange multipliers `l_i` ensures that the constraints are satisfied `f_i(x)=0` (we use *scipy*'s *SLSQP* implementation to minimize `L(c)`, the first sum supports convergence since *SLSQP*'s constraint handling is not bulletproof).
 
 *Remarks:*
 The leading *PCA* threshold is controlled via the parameter`--normalize-pca-threshold` (float), note that we keep at least two dimensions).

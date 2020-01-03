@@ -312,6 +312,8 @@ class AdaptiveSampler(BaseSampler):
 	def sample_correlation(self, sample=None):
 		"""evaluates the norm of the correlation coefficients of the representative
 		normalized samples and the (not normalized) sample argument is evaluated.
+		The functional is regularized by addition of `self.constraints.violation(sample)`
+		to support search in feasible regions.
 
 		:param sample: list or array for which correlation with respect to the representative normalized samples is evaluated
 		:return: norm of correlation coefficients of normalized `sample` with representative normalized samples
@@ -333,7 +335,7 @@ class AdaptiveSampler(BaseSampler):
 		# min_distance = np.min(np.linalg.norm(self._normalized_samples - normalized_sample, axis=-1))
 		# return correlations - min_distance/self.constraints.n_dim
 
-		return correlations
+		return correlations + self.constraints.violation(sample)
 
 	def append_criterion(self, sample):
 		"""Diversity criterion for the constraint sampling problem:
