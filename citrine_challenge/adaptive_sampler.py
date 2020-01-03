@@ -152,7 +152,7 @@ class AdaptiveSampler(BaseSampler):
 		           if not provided random `x0` is drawn
 		:param kwargs: kwargs to be passed on to `scipy-optimize.minimize`
 		               (`x0`, `fun`, `bounds` and `method=L-BFGS-B` already specified),
-									 optional additional parameters for optimizer
+		               optional additional parameters for optimizer
 		:return: sample vector minimized for negative constraint violation
 		"""
 
@@ -194,8 +194,8 @@ class AdaptiveSampler(BaseSampler):
 		:param x0: list or array, initial configuration which is to be optimized
 		:param kwargs: kwargs to be passed on to `scipy-optimize.minimize`
 		               (`x0`, `fun`, `bounds` and `method=SLSQP` already specified),
-									 optional additional parameters for optimizer
-    :return: optimization result as numpy array
+		               optional additional parameters for optimizer
+		:return: optimization result as numpy array
 		"""
 		assert self.constraints.apply(x0), "Initial sample needs to satisfy constraints."
 
@@ -380,8 +380,8 @@ class AdaptiveSampler(BaseSampler):
 		              `self.samples` vectors
 		:return: message indicating the append status,
 		         either initialization stage: "initialize" or "de-correlate";
-						 success of appending subsequent samples: "appending";
-						 or the reason for rejection.
+		         success of appending subsequent samples: "appending";
+		         or the reason for rejection.
 		"""
 
 		if self.constraints.apply(sample):   # check if all constraints are satisfied
