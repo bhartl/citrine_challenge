@@ -4,4 +4,11 @@ test/dat/
 Citrine_Challenge.egg-info/
 dist/
 build/
-**/__pycache__/
+**/__pycache_/
+__pycache__/
+eggs/
+.eggs/
+develop-eggs/
+*.egg-info/
+.installed.cfg
+*.egg
